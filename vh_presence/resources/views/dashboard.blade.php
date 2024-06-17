@@ -4,12 +4,9 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Dashboard') }}
             </h2>
-            <button
-                type="button"
-                class="inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong">
+            <a href="{{ route('members.create') }}"  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Ajouter un membre
-            </button>
-            
+            </a>      
         </div>
         
     </x-slot>
@@ -17,7 +14,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                
+                    @if(session()->has('success'))
+                    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+                        <span class="font-medium">{{ session('success') }}</span> 
+                      </div>
+                    @endif
+                    <p class="text-4xl font-bold text-gray-900 dark:text-white mb-12">Liste des Membres</p>
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -56,8 +58,15 @@
                                         {{ $membre->date_anniversaire }}
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Modifier</a>
+                                        <a href="#" class="text-red-600" onclick="event.preventDefault(); if(confirm('Êtes-vous sûr de vouloir supprimer ce membre ?')) { document.getElementById('delete-form-{{ $membre->id }}').submit(); }">
+                                            Supprimer
+                                        </a>
+                                        <a href="{{ route('members.edit', $membre->id) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Modifier</a>
                                     </td>
+                                    <form id="delete-form-{{ $membre->id }}" action="{{ route('members.destroy', $membre->id) }}" method="POST" style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
                                 </tr>
                                 @endforeach
                                 
